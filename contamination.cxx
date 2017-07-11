@@ -5,15 +5,15 @@ int contamination(Int_t E = 100, Int_t events = 100000){
   }
   
 //Setting up paths to files
-/*  TString comp_name; comp_name.Form("data/3He/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("data/3He/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("data/3He/PPN/%d_%d.root",E,events);
+  TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
+  TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
+  TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
   if(E >= 140){
     TString HePi0_name; HePi0_name.Form("data/3He/3HePi0/%d_%d.root",E,events);
     TString PPi02H_name; PPi02H_name.Form("data/3He/PPi02H_QF/%d_%d.root",E,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/3He/P2HPi0_QF/%d_%d.root",E,events);
   }
-*/
+  /*
   TString comp_name; comp_name.Form("LowLim/G3He/%d_%d.root",E,events);
   TString GP2H_name; GP2H_name.Form("LowLim/GP2H_QF/%d_%d.root",E,events);
   TString PPN_name; PPN_name.Form("LowLim/PPN/%d_%d.root",E,events);
@@ -21,7 +21,7 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     TString HePi0_name; HePi0_name.Form("LowLim/3HePi0/%d_%d.root",E,events);
     TString PPi02H_name; PPi02H_name.Form("LowLim/PPi02H_QF/%d_%d.root",E,events);
     TString P2HPi0_name; P2HPi0_name.Form("LowLim/P2HPi0_QF/%d_%d.root",E,events);
-  }
+    }*/
   
 //Import data from files
   TFile* compton = new TFile(comp_name);
@@ -59,7 +59,7 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     PPi02H_h->Scale(40.38);
     P2HPi0_h->Scale(192.3);
     PPN_h->Scale(9.62);
-  }
+    }
  
 //Format and Draw Histograms
   TCanvas* c = new TCanvas();

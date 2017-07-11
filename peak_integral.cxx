@@ -5,15 +5,15 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
   }
 
   //Setting path names
-    TString comp_name; comp_name.Form("data/3He/G3He/%d_%d.root",e,events);
-  TString GP2H_name; GP2H_name.Form("data/3He/GP2H_QF/%d_%d.root",e,events);
-  TString PPN_name; PPN_name.Form("data/3He/PPN/%d_%d.root",e,events);
+  TString comp_name; comp_name.Form("data/G3He/%d_%d.root",e,events);
+  TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",e,events);
+  TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",e,events);
   if(e >=140){
-    TString HePi0_name; HePi0_name.Form("data/3He/3HePi0/%d_%d.root",e,events);
-    TString PPi02H_name; PPi02H_name.Form("data/3He/PPi02H_QF/%d_%d.root",e,events);
-    TString P2HPi0_name; P2HPi0_name.Form("data/3He/P2HPi0_QF/%d_%d.root",e,events);
+    TString HePi0_name; HePi0_name.Form("data/3HePi0/%d_%d.root",e,events);
+    TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",e,events);
+    TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",e,events);
     }
-  /*
+    /*
   TString comp_name; comp_name.Form("LowLim/G3He/%d_%d.root",e,events);
   TString GP2H_name; GP2H_name.Form("LowLim/GP2H_QF/%d_%d.root",e,events);
   TString PPN_name; PPN_name.Form("LowLim/PPN/%d_%d.root",e,events);
@@ -84,13 +84,13 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
 	 Double_t P2HPi0_ycont = P2HPi0_th->GetBinContent(j);
        }
 
-       Double_t compt_cont = (compt_xcont+compt_ycont)/2;
-       Double_t GP2H_cont = (GP2H_xcont+GP2H_ycont)/2;
-       Double_t PPN_cont = (PPN_xcont+PPN_ycont)/2;
+       Double_t compt_cont = TMath::Sqrt((compt_xcont+compt_ycont));
+       Double_t GP2H_cont = TMath::Sqrt((GP2H_xcont+GP2H_ycont));
+       Double_t PPN_cont = TMath::Sqrt((PPN_xcont+PPN_ycont));
        if(e >= 140){
-	 Double_t HePi0_cont = (HePi0_xcont+HePi0_ycont)/2;
-	 Double_t PPi02H_cont = (PPi02H_xcont+PPi02H_ycont)/2;
-	 Double_t P2HPi0_cont = (P2HPi0_xcont+P2HPi0_ycont)/2;
+	 Double_t HePi0_cont = (HePi0_xcont+HePi0_ycont);
+	 Double_t PPi02H_cont = (PPi02H_xcont+PPi02H_ycont);
+	 Double_t P2HPi0_cont = (P2HPi0_xcont+P2HPi0_ycont);
        }
 
        compton_2h->SetBinContent(i,j,compt_cont);
@@ -152,7 +152,6 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
       Double_t P2HPi0_peak = P2HPi0_2h->Integral(xlow,xhigh,ylow,yhigh);
     }
 
-    Double_t comp_perc = comp_peak/total_peak*100;
 
     cout<<"At "<<x<<" degrees:"<<endl;
     cout<<"Number of events in total: "<<total_peak<<endl;
