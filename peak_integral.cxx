@@ -12,7 +12,7 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
     TString HePi0_name; HePi0_name.Form("data/3HePi0/%d_%d.root",e,events);
     TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",e,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",e,events);
-    }
+  }
     /*
   TString comp_name; comp_name.Form("LowLim/G3He/%d_%d.root",e,events);
   TString GP2H_name; GP2H_name.Form("LowLim/GP2H_QF/%d_%d.root",e,events);
@@ -34,91 +34,13 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
   }
 
   //Getting the missing mass histograms
-  TH1F* compton_mm = (TH1F*) compton->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-  TH1F* GP2H_mm = (TH1F*) GP2H->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-  TH1F* PPN_mm = (TH1F*) PPN->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
+  TH2F* compton_2h = (TH2F*) compton->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
+  TH2F* GP2H_2h = (TH2F*) GP2H->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
+  TH2F* PPN_2h = (TH2F*) PPN->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
   if(e >= 140){
-    TH1F* HePi0_mm = (TH1F*) HePi0->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-    TH1F* PPi02H_mm = (TH1F*) PPi02H->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-    TH1F* P2HPi0_mm = (TH1F*) P2HPi0->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-  }
-
-  //Getting the theta histograms
-  TH1F* compton_th = (TH1F*) compton->GetObjectChecked("Compton_CThCompP;1","TH1F");
-  TH1F* GP2H_th = (TH1F*) GP2H->GetObjectChecked("Compton_CThCompP;1","TH1F");
-  TH1F* PPN_th = (TH1F*) PPN->GetObjectChecked("Compton_CThCompP;1","TH1F");
-  if(e >= 140){
-    TH1F* HePi0_th = (TH1F*) HePi0->GetObjectChecked("Compton_CThCompP;1","TH1F");
-    TH1F* PPi02H_th = (TH1F*) PPi02H->GetObjectChecked("Compton_CThCompP;1","TH1F");
-    TH1F* P2HPi0_th = (TH1F*) P2HPi0->GetObjectChecked("Compton_CThCompP;1","TH1F");
-  }
-
-  //Creating 2D Histograms
-  Int_t xbin = compton_mm->FindFixBin(25);
-  Int_t ybin = compton_th->FindFixBin(1);
-  TH2F *compton_2h = new TH2F("compton_2h","compton",xbin,-25,25,ybin,-1,1);
-  TH2F *GP2H_2h = new TH2F("GP2H_2h","GP2H",xbin,-25,25,ybin,-1,1);
-  TH2F *PPN_2h = new TH2F("PPN_2h","PPN",xbin,-25,25,ybin,-1,1);
-  if( e >= 140){
-    TH2F *HePi0_2h = new TH2F("HePi0_2h","G3HePi0",xbin,-25,25,ybin,-1,1);
-    TH2F *PPi02H_2h = new TH2F("PPi02H_2h","PPi02H",xbin,-25,25,ybin,-1,1);
-    TH2F *P2HPi0_2h = new TH2F("P2HPi0_2h","P2HPi0",xbin,-25,25,ybin,-1,1);
-  }
-
-  //Filling the histogram
-  for(int i=0; i<xbin; i++){
-    for(int j=0; j<ybin; j++){
-       Double_t compt_xcont = compton_mm->GetBinContent(i);
-       Double_t compt_ycont = compton_th->GetBinContent(j); 
-       Double_t GP2H_xcont = GP2H_mm->GetBinContent(i);
-       Double_t GP2H_ycont = GP2H_th->GetBinContent(j);
-       Double_t PPN_xcont = PPN_mm->GetBinContent(i);
-       Double_t PPN_ycont = PPN_th->GetBinContent(j);
-
-       if(e >=140){
-	 Double_t HePi0_xcont = HePi0_mm->GetBinContent(i);
-	 Double_t HePi0_ycont = HePi0_th->GetBinContent(j);
-	 Double_t PPi02H_xcont = PPi02H_mm->GetBinContent(i);
-	 Double_t PPi02H_ycont = PPi02H_th->GetBinContent(j);
-	 Double_t P2HPi0_xcont = P2HPi0_mm->GetBinContent(i);
-	 Double_t P2HPi0_ycont = P2HPi0_th->GetBinContent(j);
-       }
-
-       Double_t compt_cont = TMath::Sqrt((compt_xcont+compt_ycont));
-       Double_t GP2H_cont = TMath::Sqrt((GP2H_xcont+GP2H_ycont));
-       Double_t PPN_cont = TMath::Sqrt((PPN_xcont+PPN_ycont));
-       if(e >= 140){
-	 Double_t HePi0_cont = (HePi0_xcont+HePi0_ycont);
-	 Double_t PPi02H_cont = (PPi02H_xcont+PPi02H_ycont);
-	 Double_t P2HPi0_cont = (P2HPi0_xcont+P2HPi0_ycont);
-       }
-
-       compton_2h->SetBinContent(i,j,compt_cont);
-       GP2H_2h->SetBinContent(i,j,GP2H_cont);
-       PPN_2h->SetBinContent(i,j,PPN_cont);
-       if(e >= 140){
-	 HePi0_2h->SetBinContent(i,j,HePi0_cont);
-	 PPi02H_2h->SetBinContent(i,j,PPi02H_cont);
-	 P2HPi0_2h->SetBinContent(i,j,P2HPi0_cont);
-       }
-    }
-  }
-
-  //Scale histograms
-  if(e == 100){
-    GP2H_2h->Scale(2.13);
-    PPN_2h->Scale(200);
-  }
-  else if(e == 120){
-    GP2H_2h->Scale(1.60);
-    PPN_2h->Scale(100);
-  }
-  else if(e == 200){
-    HePi0_2h->Scale(58.18);
-    GP2H_2h->Scale(0.79);
-    PPi02H_2h->Scale(40.38);
-    P2HPi0_2h->Scale(192.3);
-    PPN_2h->Scale(9.62);
+    TH2F* HePi0_2h = (TH2F*) HePi0->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
+    TH2F* PPi02H_2h = (TH2F*) PPi02H->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
+    TH2F* P2HPi0_2h = (TH2F*) P2HPi0->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
   }
 
   //Add Histograms
