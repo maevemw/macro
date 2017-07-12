@@ -1,5 +1,5 @@
 int mmass_theta(Int_t E = 100, Int_t events = 100000){
-
+  
   if(E%20 != 0){
     return 2;
   }
@@ -38,79 +38,19 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
   }
 
 //Convert data to a histogram
-  TH1F* compton_mm = (TH1F*) compton->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-  TH1F* compton_th = (TH1F*) compton->GetObjectChecked("Compton_CThCompP;1","TH1F");
+  TH2F *compton_2h = (TH2F*) compton->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
+  
+  TH2F *GP2H_2h = (TH2F*) GP2H->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
 
-  TH1F* GP2H_mm = (TH1F*) GP2H->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-  TH1F* GP2H_th = (TH1F*) GP2H->GetObjectChecked("Compton_CThCompP;1","TH1F");
-
-  TH1F* PPN_mm = (TH1F*) PPN->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-  TH1F* PPN_th = (TH1F*) PPN->GetObjectChecked("Compton_CThCompP;1","TH1F");
+  TH2F *PPN_2h = (TH2F*) PPN->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
 
   if(E >=140){
-    TH1F* HePi0_mm = (TH1F*) HePi0->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-    TH1F* HePi0_th = (TH1F*) HePi0->GetObjectChecked("Compton_CThCompP;1","TH1F");
+    TH2F* HePi0_2h = (TH2F*) HePi0->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
 
-    TH1F* PPi02H_mm = (TH1F*) PPi02H->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-    TH1F* PPi02H_th = (TH1F*) PPi02H->GetObjectChecked("Compton_CThCompP;1","TH1F");
+    TH2F* PPi02H_2h = (TH2F*) PPi02H->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
 
-    TH1F* P2HPi0_mm = (TH1F*) P2HPi0->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
-    TH1F* P2HPi0_th = (TH1F*) P2HPi0->GetObjectChecked("Compton_CThCompP;1","TH1F");
+    TH2F* P2HPi0_2h = (TH2F*) P2HPi0->GetObjectChecked("Compton_CThCompP_v_EmCompTotP;1","TH2F");
 
-  }
-
-//finding the highest bin number
-  Int_t xbin = compton_mm->FindFixBin(25);
-  Int_t ybin = compton_th->FindFixBin(1);
-
-//creating the 2D histogram
-  TH2F *compton_2h = new TH2F("compton_2h","compton",xbin,-25,25,ybin,-1,1);
-  TH2F *GP2H_2h = new TH2F("GP2H_2h","GP2H",xbin,-25,25,ybin,-1,1);
-  TH2F *PPN_2h = new TH2F("PPN_2h","PPN",xbin,-25,25,ybin,-1,1);
-  if(E >=140){
-    TH2F *HePi0_2h = new TH2F("HePi0_2h","HePi0",xbin,-25,25,ybin,-1,1);
-    TH2F *PPi02H_2h = new TH2F("PPi02H_2h","PPi02H",xbin,-25,25,ybin,-1,1);
-    TH2F *P2HPi0_2h = new TH2F("P2HPi0_2h","P2HPi0",xbin,-25,25,ybin,-1,1);
-  }
-
-
-//Filling the histogram
-  for(int i=0; i<xbin; i++){
-    for(int j=0; j<ybin; j++){
-       Double_t compt_xcont = compton_mm->GetBinContent(i);
-       Double_t compt_ycont = compton_th->GetBinContent(j); 
-       Double_t GP2H_xcont = GP2H_mm->GetBinContent(i);
-       Double_t GP2H_ycont = GP2H_th->GetBinContent(j);
-       Double_t PPN_xcont = PPN_mm->GetBinContent(i);
-       Double_t PPN_ycont = PPN_th->GetBinContent(j);
-
-       if(E >=140){
-	 Double_t HePi0_xcont = HePi0_mm->GetBinContent(i);
-	 Double_t HePi0_ycont = HePi0_th->GetBinContent(j);
-	 Double_t PPi02H_xcont = PPi02H_mm->GetBinContent(i);
-	 Double_t PPi02H_ycont = PPi02H_th->GetBinContent(j);
-	 Double_t P2HPi0_xcont = P2HPi0_mm->GetBinContent(i);
-	 Double_t P2HPi0_ycont = P2HPi0_th->GetBinContent(j);
-       }
-
-       Double_t compt_cont = (compt_xcont+compt_ycont);
-       Double_t GP2H_cont = (GP2H_xcont+GP2H_ycont);
-       Double_t PPN_cont = (PPN_xcont+PPN_ycont);
-       if(E >= 140){
-	 Double_t HePi0_cont = (HePi0_xcont+HePi0_ycont);
-	 Double_t PPi02H_cont = (PPi02H_xcont+PPi02H_ycont);
-	 Double_t P2HPi0_cont = (P2HPi0_xcont+P2HPi0_ycont);
-       }
-
-       compton_2h->SetBinContent(i,j,compt_cont);
-       GP2H_2h->SetBinContent(i,j,GP2H_cont);
-       PPN_2h->SetBinContent(i,j,PPN_cont);
-       if(E >= 140){
-	 HePi0_2h->SetBinContent(i,j,HePi0_cont);
-	 PPi02H_2h->SetBinContent(i,j,PPi02H_cont);
-	 P2HPi0_2h->SetBinContent(i,j,P2HPi0_cont);
-       }
-    }
   }
 
 //Scale histograms
@@ -129,9 +69,12 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
     P2HPi0_2h->Scale(192.3);
     PPN_2h->Scale(9.62);
   }
- 
+
+  gStyle->SetOptStat(0);
+  
 //Format and Draw Histograms
-  TCanvas* c = new TCanvas();
+  TString title; title.Form("E=%dMeV: Missing Energy",E);
+  TCanvas* c = new TCanvas(title,title);
   if(E < 140){
     c->Divide(3);
   }
@@ -139,41 +82,45 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
     c->Divide(3,2);
   }
 
-  TString title; title.Form("E=%dMeV: Missing Energy",E);
   c->cd(1);
-  compton_2h->SetTitle(title);
+  compton_2h->SetTitle("Compton");
   compton_2h->SetXTitle("Missing Energy (MeV)");
   compton_2h->SetYTitle("Cos(#theta)");
   compton_2h->SetAxisRange(-10,10,"X");
   compton_2h->DrawClone("col");
 
   c->cd(2);
+  GP2H_2h->SetTitle("GP2H_QF");
   GP2H_2h->SetXTitle("Missing Energy (MeV)");
   GP2H_2h->SetYTitle("Cos(#theta)");
   GP2H_2h->DrawClone("col");
   
   c->cd(3);
+  PPN_2h->SetTitle("PPN");
   PPN_2h->SetXTitle("Missing Energy (MeV)");
   PPN_2h->SetYTitle("Cos(#theta)");
   PPN_2h->DrawClone("col");
 
   if(E >=140){
     c->cd(4);
+    HePi0_2h->SetTitle("G3HePi0");
     HePi0_2h->SetXTitle("Missing Energy (MeV)");
     HePi0_2h->SetYTitle("Cos(#theta)");
     HePi0_2h->DrawClone("col");
 
     c->cd(5);
+    PPi02H_2h->SetTitle("PPi02H_QF");
     PPi02H_2h->SetXTitle("Missing Energy (MeV)");
     PPi02H_2h->SetYTitle("Cos(#theta)");
     PPi02H_2h->DrawClone("col");
 
     c->cd(6);
+    P2HPi0_2h->SetTitle("P2HPi0_QF");
     P2HPi0_2h->SetXTitle("Missing Energy (MeV)");
     P2HPi0_2h->SetYTitle("Cos(#theta)");
     P2HPi0_2h->DrawClone("col");
   }
-	
+  	
 //Add Histograms
   TH2F* total_2h=new TH2F(*compton_2h);
   total_2h->Add(PPN_2h);
