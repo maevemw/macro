@@ -8,13 +8,23 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
   }
 
 //Setting up paths to files
+  /*
   TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
   TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
   TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
   if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("data/G3HePi0/%d_%d.root",E,events);
+    TString HePi0_name; HePi0_name.Form("data/3HePi0/%d_%d.root",E,events);
     TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",E,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",E,events);
+  }
+  */
+  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",E,events);
+  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",E,events);
+  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",E,events);
+  if(E >= 140){
+    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",E,events);
+    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",E,events);
+    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",E,events);
   }
   
 //Import data from files
@@ -76,33 +86,56 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
       
 //Format and Draw Histograms
   gStyle->SetOptStat(0);
-  TCanvas* c = new TCanvas();
+  TCanvas* c1 = new TCanvas();
 
-  TString title; title.Form("E=%dMeV: Missing Energy",E);
+  TString title; title.Form("E=%dMeV: Missing Energy at %d Degrees" ,E, theta);
   compton_h->SetTitle(title);
   compton_h->SetXTitle("Missing Energy");
   compton_h->SetYTitle("Number of Events");
   compton_h->SetAxisRange(-10,10,"X");
   compton_h->SetLineColor(1);
+  compton_h->SetLineWidth(2);
+  compton_h->SetFillColorAlpha(1, 0.5);
+  compton_h->SetFillStyle(3001);
   compton_h->DrawClone("SameHist");
 
-  GP2H_h->SetLineColor(3);
+  GP2H_h->SetLineColor(2);
+  GP2H_h->SetLineWidth(2);
   GP2H_h->DrawClone("SameHist");
-  
-  PPN_h->SetLineColor(7);
+ 
+  PPN_h->SetLineColor(4);
+  PPN_h->SetLineWidth(2);
   PPN_h->DrawClone("Samehist");
 
   if(E >=140){
-    HePi0_h->SetLineColor(2);
-    HePi0_h->DrawClone("SameHist");
-
-    PPi02H_h->SetLineColor(4);
+    TString title;
+    title.Form("E=%dMeV: Missing Energy at %d Degrees" ,E, theta);
+    PPi02H_h->SetTitle(title);
+    PPi02H_h->SetXTitle("Missing Energy");
+    PPi02H_h->SetYTitle("Number of Events");
+    PPi02H_h->SetAxisRange(-10,10,"X");
+    PPi02H_h->SetLineColor(6);
+    PPi02H_h->SetLineWidth(2);
     PPi02H_h->DrawClone("SameHist");
 
-    P2HPi0_h->SetLineColor(6);
+    P2HPi0_h->SetLineColor(8);
+    P2HPi0_h->SetLineWidth(2);
     P2HPi0_h->DrawClone("SameHist");
+
+    HePi0_h->SetLineColor(7);
+    HePi0_h->SetLineWidth(2);
+    HePi0_h->DrawClone("SameHist");
   }
 
+  TLegend leg(.1,.7,.3,.9);
+  leg.AddEntry(compton_h,"Compton Scattering");
+  leg.AddEntry(GP2H_h,"QF from Proton");
+  leg.AddEntry(PPN_h,"Pure Breakup");
+  leg.AddEntry(HePi0_h,"Pi0 Production");
+  leg.AddEntry(PPi02H_h,"QF Pi0 fom Proton");
+  leg.AddEntry(P2HPi0_h,"QF Pi0 from Deuterium");
+  leg.DrawClone("SameHist");  
+  /*
   //Add Histograms
   TH1D *total_h=new TH1D(*compton_h);
   total_h->Add(PPN_h);
@@ -146,6 +179,6 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
     cout<<"PPi02H_QF: "<<PPi02H_cont<<"%"<<endl;
     cout<<"P2HPi0_QF: "<<P2HPi0_cont<<"%"<<endl;
   }
-
+  */
   return 0;
 }

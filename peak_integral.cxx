@@ -5,6 +5,7 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
   }
 
   //Setting path names
+  /*
   TString comp_name; comp_name.Form("data/G3He/%d_%d.root",e,events);
   TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",e,events);
   TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",e,events);
@@ -13,15 +14,15 @@ int peak_integral(Int_t e = 100, Int_t events = 100000){
     TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",e,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",e,events);
   }
-    /*
-  TString comp_name; comp_name.Form("LowLim/G3He/%d_%d.root",e,events);
-  TString GP2H_name; GP2H_name.Form("LowLim/GP2H_QF/%d_%d.root",e,events);
-  TString PPN_name; PPN_name.Form("LowLim/PPN/%d_%d.root",e,events);
+  */
+  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",e,events);
+  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",e,events);
+  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",e,events);
   if(e >=140){
-    TString HePi0_name; HePi0_name.Form("LowLim/3HePi0/%d_%d.root",e,events);
-    TString PPi02H_name; PPi02H_name.Form("LowLim/PPi02H_QF/%d_%d.root",e,events);
-    TString P2HPi0_name; P2HPi0_name.Form("LowLim/P2HPi0_QF/%d_%d.root",e,events);
-    }*/
+    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",e,events);
+    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",e,events);
+    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",e,events);
+    }
 
   //Gathering the root files
   TFile* compton = new TFile(comp_name);

@@ -9,24 +9,25 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
   gStyle->SetPalette(1);
 
 //Setting up paths to files
+  /*
   TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
   TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
   TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
   if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("data/G3HePi0/%d_%d.root",E,events);
+    TString HePi0_name; HePi0_name.Form("data/3HePi0/%d_%d.root",E,events);
     TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",E,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",E,events);
   }
-  /*
-  TString comp_name; comp_name.Form("LowLim/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("LowLim/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("LowLim/PPN/%d_%d.root",E,events);
+  */
+  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",E,events);
+  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",E,events);
+  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",E,events);
   if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("LowLim/G3HePi0/%d_%d.root",E,events);
-    TString PPi02H_name; PPi02H_name.Form("LowLim/PPi02H_QF/%d_%d.root",E,events);
-    TString P2HPi0_name; P2HPi0_name.Form("LowLim/P2HPi0_QF/%d_%d.root",E,events);
-    }*/
-
+    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",E,events);
+    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",E,events);
+    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",E,events);
+    }
+  
 //Import data from files
   TFile* compton = new TFile(comp_name);
   TFile* GP2H = new TFile(GP2H_name);
