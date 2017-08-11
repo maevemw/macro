@@ -5,23 +5,15 @@ int contamination(Int_t E = 100, Int_t events = 100000){
   }
   
 //Setting up paths to files
-  TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
+
+  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",E,events);
+  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",E,events);
+  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",E,events);
   if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("data/3He/3HePi0/%d_%d.root",E,events);
-    TString PPi02H_name; PPi02H_name.Form("data/3He/PPi02H_QF/%d_%d.root",E,events);
-    TString P2HPi0_name; P2HPi0_name.Form("data/3He/P2HPi0_QF/%d_%d.root",E,events);
+    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",E,events);
+    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",E,events);
+    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",E,events);
   }
-  /*
-  TString comp_name; comp_name.Form("LowLim/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("LowLim/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("LowLim/PPN/%d_%d.root",E,events);
-  if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("LowLim/3HePi0/%d_%d.root",E,events);
-    TString PPi02H_name; PPi02H_name.Form("LowLim/PPi02H_QF/%d_%d.root",E,events);
-    TString P2HPi0_name; P2HPi0_name.Form("LowLim/P2HPi0_QF/%d_%d.root",E,events);
-    }*/
   
 //Import data from files
   TFile* compton = new TFile(comp_name);
@@ -43,7 +35,7 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     TH1F* P2HPi0_h = (TH1F*) P2HPi0->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
   }
 
-
+  /*
 //Scale histograms
   if(E == 100){
     GP2H_h->Scale(2.13);
@@ -60,7 +52,7 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     P2HPi0_h->Scale(192.3);
     PPN_h->Scale(9.62);
     }
- 
+  */
 //Format and Draw Histograms
   TCanvas* c = new TCanvas();
 
@@ -136,6 +128,17 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     Double_t P2HPi0_cont = P2HPi0_peak/total_peak * 100;
   }
 
+//Print out events in Compton peak
+  cout<<"Compton: "<<comp_peak/100000<<"%"<<endl;
+  cout<<"GP2H_QF: "<<GP2H_peak/100000<<"%"<<endl;
+  cout<<"PPN: "<<PPN_peak/100000<<"%"<<endl;
+  if(E >=140){
+    cout<<"3HePi0: "<<HePi0_peak/100000<<"%"<<endl;
+    cout<<"PPi02H_QF: "<<PPi02H_peak/100000<<"%"<<endl;
+    cout<<"P2HPi0_QF: "<<P2HPi0_peak/100000<<"%"<<endl;
+  }
+  
+  /* 
 //Print out contaminations
   cout<<"Compton: "<<comp_cont<<"%"<<endl;
   cout<<"GP2H_QF: "<<GP2H_cont<<"%"<<endl;
@@ -145,7 +148,7 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     cout<<"PPi02H_QF: "<<PPi02H_cont<<"%"<<endl;
     cout<<"P2HPi0_QF: "<<P2HPi0_cont<<"%"<<endl;
   }
-
+  */
   return 0;
 }
 
