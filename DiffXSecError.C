@@ -29,7 +29,7 @@ void DiffXSecError(Double_t e = 120)
 //Alpha values//////////////////////////////////////////////////////////////////
 	
 	// Solid angle, Yield , Yield error
-	Double_t adomega, ayield, aerror;
+	Double_t adomega, ayield, aerror, ayieldsm, aerrorsm, ayieldbg, aerrorbg;
 
 	// Photon energy, Recoil angle, Differential cross section -2,
 	// Differential cross section +2, Varied Standard Unit *2 ,Chi squared
@@ -156,12 +156,16 @@ void DiffXSecError(Double_t e = 120)
 				
 				// Yield and Error
 				ayield = adixs2[j]*photonflux*deteff*livet*targt*adomega*beamt;
+				ayieldsm = adixssm2[j]*photonflux*deteff*livet*targt*adomega*beamt;
+				ayieldbg = adixsbg2[j]*photonflux*deteff*livet*targt*adomega*beamt;				
 				aerror = sqrt(ayield);
+				aerrorsm = sqrt(ayieldsm);
+				aerrorbg = sqrt(ayieldbg);
 
 				// DXS uncertainty
 				addixs2[j] = adixs2[j]/aerror;
-			      	addixssm2[j] = adixssm2[j]/aerror;
-				addixsbg2[j] = adixsbg2[j]/aerror;
+			      	addixssm2[j] = adixssm2[j]/aerrorsm;
+				addixsbg2[j] = adixsbg2[j]/aerrorbg;
 				
 				// Smear DXS values
 				// Mean = central DXS
@@ -203,8 +207,8 @@ void DiffXSecError(Double_t e = 120)
 
 	// Print Chi-squared for alpha
 	cout << "Alpha Reduced Chi Squared = " << achi_sq << endl;
-	//cout << "Alpha Reduced Chi Squared -2 = " << achi_sq_sm << endl;
-	//cout << "Alpha Reduced Chi Squared +2 = " << achi_sq_bg << endl;
+	cout << "Alpha Reduced Chi Squared -2 = " << achi_sq_sm << endl;
+	cout << "Alpha Reduced Chi Squared +2 = " << achi_sq_bg << endl;
 
 	// Plot trend line for alpha unvaried
 	TGraphErrors *gr1 = new TGraphErrors( i, athet1, adixs1, adthet1, addixs1);
@@ -266,7 +270,7 @@ void DiffXSecError(Double_t e = 120)
 	pt->Draw();
 
 //Beta values//////////////////////////////////////////////////////////////////
-
+/*
 	// Solid angle, Yield, Yield error
 	Double_t bdomega, byield, berror;
 
@@ -491,7 +495,7 @@ void DiffXSecError(Double_t e = 120)
 	pt2->AddEntry(gr8, "Beta-2", "l");
 
 	pt2->Draw();
-
+*/
 }
 
 
