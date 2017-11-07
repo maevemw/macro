@@ -8,8 +8,8 @@ void DiffXSecError(Double_t e = 120)
         // Tagging Efficiency
         Double_t tageff = 0.5;
 
-	// # tagger channels binned together
-	Double_t ebin = 10;
+        // # tagger channels binned together
+        Double_t ebin = 10;
 
 	// Flux per channel (Hz/MeV)
 	Double_t tagflux = 1000000;
@@ -28,11 +28,15 @@ void DiffXSecError(Double_t e = 120)
 
 //Alpha values//////////////////////////////////////////////////////////////////
 	
-	// Solid angle, Yield , Yield error
+	// Solid angle, Yield , Yield error, Yield -2, Yield -2 error,
+	// Yield +2, Yield +2 error
 	Double_t adomega, ayield, aerror, ayieldsm, aerrorsm, ayieldbg, aerrorbg;
+	Double_t ayielder, ayieldsmer, ayieldbger, aerrorer, aerrorsmer, aerrorbger;
+	Double_t aerrorf, aerrorsmf, aerrorbgf; 
 
 	// Photon energy, Recoil angle, Differential cross section -2,
-	// Differential cross section +2, Varied Standard Unit *2 ,Chi squared
+	// Differential cross section +2, Varied Standard Unit *2 ,Chi-Squared
+	// Chi-Squared -2, Chi-Squared +2
 	Double_t aegamma, atheta, adiffxssm, adiffxsbg, adiffxs, adxs, achi_sq, achi_sq_sm, achi_sq_bg;
 
 	// Line values
@@ -64,18 +68,20 @@ void DiffXSecError(Double_t e = 120)
 	TString nalpha = "3HeXsec_neutron_alphavaried.dat";
 
 	// Sets Detection efficiency based on Energy
-	Double_t deteff = 1;
 	Int_t lowDXS = 1, highDXS = 100;
 	Int_t lowX = 5, highX = 100;
 	if (e == 100) 
 	{
-	       deteff = 0.326; //My value
+	  
+	  Double_t deteff[9] = {0.0, 0.142, 0.501, 0.397, 0.334, 0.307, 0.308, 0.342, 0.115};
+	  Double_t deteffer = 0.149;
 	       lowDXS = 15;
 	       highDXS = 50;
 	}	
 	else if (e == 120) 
 	{
-	        deteff = 0.818; //Meg's Value
+	  Double_t deteff[9] = {0.0, 0.291, 0.988, 0.916, 0.903, 0.920, 0.972, 1.09, 0.386};
+	  Double_t deteffer = 0.444;
 		lowDXS = 10;
 		highDXS = 25;
 	}
@@ -155,17 +161,26 @@ void DiffXSecError(Double_t e = 120)
 				adomega = 2*kPI*(cos((athet2[j]-10)*kPI/180)-cos((athet2[j]+10)*kPI/180));
 				
 				// Yield and Error
-				ayield = adixs2[j]*photonflux*deteff*livet*targt*adomega*beamt;
-				ayieldsm = adixssm2[j]*photonflux*deteff*livet*targt*adomega*beamt;
-				ayieldbg = adixsbg2[j]*photonflux*deteff*livet*targt*adomega*beamt;				
-				aerror = sqrt(ayield);
-				aerrorsm = sqrt(ayieldsm);
-				aerrorbg = sqrt(ayieldbg);
+				ayield = adixs2[j]*photonflux*deteff[j]*livet*targt*adomega*beamt;
+				ayieldsm = adixssm2[j]*photonflux*deteff[j]*livet*targt*adomega*beamt;
+				ayieldbg = adixsbg2[j]*photonflux*deteff[j]*livet*targt*adomega*beamt;
+
+				ayielder = adixs2[j]*photonflux*deteffer*livet*targt*adomega*beamt;
+				ayieldsmer = adixssm2[j]*photonflux*deteffer*livet*targt*adomega*beamt;
+				ayieldbger = adixsbg2[j]*photonflux*deteffer*livet*targt*adomega*beamt;
+				
+				aerror = sqrt(ayield), aerrorer = sqrt(ayielder);
+				aerrorsm = sqrt(ayieldsm), aerrorsmer = sqrt(ayieldsmer);
+				aerrorbg = sqrt(ayieldbg), aerrorbger = sqrt(ayieldbger);
+
+				aerrorf = sqrt(pow(aerror,2) + pow(aerrorer,2));
+				aerrorsmf = sqrt(pow(aerrorsm,2) + pow(aerrorsmer,2));
+				aerrorbgf = sqrt(pow(aerror,2) + pow(aerrorbger,2));
 
 				// DXS uncertainty
-				addixs2[j] = adixs2[j]/aerror;
-			      	addixssm2[j] = adixssm2[j]/aerrorsm;
-				addixsbg2[j] = adixsbg2[j]/aerrorbg;
+				addixs2[j] = adixs2[j]/aerrorf;
+			      	addixssm2[j] = adixssm2[j]/aerrorsmf;
+				addixsbg2[j] = adixsbg2[j]/aerrorbgf;
 				
 				// Smear DXS values
 				// Mean = central DXS
@@ -178,8 +193,8 @@ void DiffXSecError(Double_t e = 120)
 				adixsran[j] = f1->GetRandom();
 
 				// Print theta, DXS, Randomize point location
-				cout << athet2[j] << " " << adixsran[j] << " " << addixs2[j]<< endl;
-
+				cout << athet2[j] << " : " << adixsran[j] << " +/- " << addixs2[j]<< endl;
+ 
 				// Calculates the chi-sq for this point
 				achi_sq += pow((adixsran[j] - adixs2[j])/addixs2[j], 2);
 			       	achi_sq_sm += pow((adixsran[j] - adixssm2[j])/addixssm2[j], 2);
@@ -218,8 +233,10 @@ void DiffXSecError(Double_t e = 120)
 	gStyle->SetTitleAlign(23);
 	gr1->SetLineWidth(3);
 	gr1->SetLineStyle(1);
-	gr1->GetXaxis()->SetTitleOffset(1.1);
-	gr1->GetYaxis()->SetTitleOffset(1.0);
+	gr1->GetXaxis()->SetTitleOffset(0.8);
+	gr1->GetYaxis()->SetTitleOffset(0.8);
+	gr1->GetXaxis()->SetTitleSize(0.05);
+	gr1->GetYaxis()->SetTitleSize(0.05);
 	gr1->GetXaxis()->SetTitle("#theta (deg)");
 	gr1->GetYaxis()->SetTitle("d#sigma/d#Omega (nb/sr)");
 	gr1->GetXaxis()->SetLabelSize(0.03);
@@ -268,25 +285,27 @@ void DiffXSecError(Double_t e = 120)
 	pt->AddEntry(gr4, "Alpha-2", "l");
 
 	pt->Draw();
-
+       
 //Beta values//////////////////////////////////////////////////////////////////
-/*
-	// Solid angle, Yield, Yield error
-	Double_t bdomega, byield, berror;
+
+	// Solid angle, Yield, Yield error, Yield -2, Yield -2 error,
+	// Yield +2, Yield +2 error
+	Double_t bdomega, byield, berror, byieldsm, berrorsm, byieldbg, berrorbg;
+	Double_t byielder, byieldsmer, byieldbger;
 
 	// Photon energy, Recoil angle, Differential cross section -2,
-	// Differential cross section +2, Varied Standard Unit *2 ,Chi squared
+	// Differential cross section +2, Varied Standard Unit *2 ,Chi-Squared
+	// Chi-Squared -2, Chi-Squared +2
 	Double_t begamma, btheta, bdiffxssm, bdiffxsbg, bdiffxs, bdxs, bchi_sq, bchi_sq_sm, bchi_sq_bg;
 
-	// Theta for line, Theta error for line, Theta for points,
-	// Theta error for points, Differential cross section (-2),
+	// Line values
+	// Theta, Theta error,
+	// Differential cross section (-2),
 	// Differential cross section (-2) error,
 	// Differential cross section (+2),
 	// Differential cross section (+2) error,
-	// Differential cross section for points,
-	// Differential cross section error for points,
-	// Differential cross section for line,
-	// Differential cross section error for line	
+	// Differential cross section,
+	// Differential cross section error
 	Double_t bthet1[20], bdthet1[20], bdixssm1[20], bddixssm1[20], bdixsbg1[20], bddixsbg1[20], bdixs1[20], bddixs1[20];
 
 	// Point values
@@ -299,25 +318,26 @@ void DiffXSecError(Double_t e = 120)
 	// Differential cross section error	
 	Double_t bthet2[20], bdthet2[20], bdixssm2[20], bddixssm2[20], bdixsbg2[20], bddixsbg2[20], bdixs2[20], bddixs2[20];
 
-	// Smeared DXS values
+	// Smeared DXS values beta
 	Double_t bdixsran[20];
 
 	Int_t m, n;
 
 	// Data file to be read in
 	TString nbeta = "3HeXsec_neutron_betavaried.dat";	
-	
- 	Double_t deteff = 1;
+
+	//  Sets Detection efficiency based on Energy
+	/*	Double_t deteff = 1;
 	if (e == 100) 
 	{
 	        deteff = 0.326; //My values
 	}	
 	else if (e == 120) 
 	{
-	        deteff = 0.818; //Meg's values
-	}
+	        deteff = 0.865; //My values
+		}*/
 
-	// Ensure data file is open and can be read in 
+	// Ensure data file nbeta exists and can be opened 
 	ifstream bet(nbeta);
 	if ( !bet.is_open()) 
 	{
@@ -327,7 +347,7 @@ void DiffXSecError(Double_t e = 120)
 		break;
 	}
 
-	// Set all DXS values to be within range of DXS low and high
+	// Set all DXS values to be within range of DXS high, low
 	TF1 *f2 = new TF1("f2", "gaus", lowDXS, highDXS);
 
 	// Random amplitude
@@ -335,6 +355,8 @@ void DiffXSecError(Double_t e = 120)
 
 	// Zero all variables to prevent errors
 	bchi_sq = 0;
+	bchi_sq_sm = 0;
+	bchi_sq_bg = 0;
 	m = 0;
 	n = 0;
 
@@ -389,13 +411,22 @@ void DiffXSecError(Double_t e = 120)
 				bdomega = 2*kPI*(cos((bthet2[n]-10)*kPI/180)-cos((bthet2[n]+10)*kPI/180));
 				
 				// Yield and Error
-				byield = bdixs2[n]*photonflux*deteff*livet*targt*bdomega*beamt;
-				berror = sqrt(byield);
+				byield = bdixs2[n]*photonflux*deteff[n]*livet*targt*bdomega*beamt;
+				byieldsm = bdixssm2[n]*photonflux*deteff[n]*livet*targt*bdomega*beamt;
+				byieldbg = bdixsbg2[n]*photonflux*deteff[n]*livet*targt*bdomega*beamt;
+
+				byielder = bdixs2[n]*photonflux*deteffer*livet*targt*bdomega*beamt;
+				byieldsmer = bdixssm2[n]*photonflux*deteffer*livet*targt*bdomega*beamt;
+				byieldbger = bdixsbg2[n]*photonflux*deteffer*livet*targt*bdomega*beamt;
+				
+				berror = sqrt(byield + byielder);
+				berrorsm = sqrt(byieldsm + byieldsmer);
+				berrorbg = sqrt(byieldbg + byieldbger);
 
 				//DXS uncertainty
 				bddixs2[n] = bdixs2[n]/berror;
-				bddixssm2[n] = bdixssm2[n]/berror;
-				bddixsbg2[n] = bdixsbg2[n]/berror;
+				bddixssm2[n] = bdixssm2[n]/berrorsm;
+				bddixsbg2[n] = bdixsbg2[n]/berrorbg;
 
 				// Smear DXS values
 				// Main = central DXS
@@ -407,7 +438,7 @@ void DiffXSecError(Double_t e = 120)
 				// Randomize point location
 				bdixsran[n] = f2->GetRandom();
 
-				cout << bthet2[n] << " " << bdixs2[n] << " " << bdixsran[n] << endl;	       
+				cout << bthet2[n] << " : " << bdixsran[n] << " +/- " << bddixs2[n] << endl;	       
 
 				//Calculates the chi-sq for this point
 				bchi_sq += pow((bdixsran[n] - bdixs2[n])/bddixs2[n], 2);
@@ -448,8 +479,10 @@ void DiffXSecError(Double_t e = 120)
 	gStyle->SetTitleAlign(23);
 	gr5->SetLineWidth(3);
 	gr5->SetLineStyle(1);
-	gr5->GetXaxis()->SetTitleOffset(1.1);
-	gr5->GetYaxis()->SetTitleOffset(1.0);
+	gr5->GetXaxis()->SetTitleOffset(0.8);
+	gr5->GetYaxis()->SetTitleOffset(0.8);
+	gr5->GetXaxis()->SetTitleSize(0.05);
+	gr5->GetYaxis()->SetTitleSize(0.05);
 	gr5->GetXaxis()->SetTitle("#theta (deg)");
 	gr5->GetYaxis()->SetTitle("d#sigma/d#Omega (nb/sr)");
 	gr5->GetXaxis()->SetLabelSize(0.03);
@@ -495,7 +528,7 @@ void DiffXSecError(Double_t e = 120)
 	pt2->AddEntry(gr8, "Beta-2", "l");
 
 	pt2->Draw();
-*/
+       
 }
 
 

@@ -24,16 +24,16 @@ void AlphaBeta(Double_t e = 120)
 	// chi-squared, error on alpha
 	Double_t  alpha0, alpha, achi_sq, alpherr;
 	
-	// Differential cross section, Differential cross section error, Theta
-	Double_t asmear[20], aserr[20], asthet[20];
+	// Differential cross section smeared value,
+	// Differential cross section error
+	Double_t asmear[20], aserr[20];
 
-	// Change in Cross section, New alpha value
-	Double_t adeltaxs[20], axsnew[20];
+	// Change in Cross section, New alpha value,
+	// Central Differential Cross section 
+	Double_t adeltaxs[20], axsnew[20], adixs[20];
 
-	// Angle, Chi-Squared
-	Int_t athet[20];
-
-	Double_t achi_sqa[40], alphaa[40];
+	// Chi-Squared array, Alpha array
+	Double_t achi_sqa[100], alphaa[100];
 
 	// Simulated cross section data
 	TString nalpha = "3HeXsec_neutron_alphavaried.dat";
@@ -66,7 +66,6 @@ void AlphaBeta(Double_t e = 120)
 	while(!asmearf.eof())
 	{
 		asmearf >> astheta >> as >> aserror;
-		asthet[k] = astheta;
 		asmear[k] = as;
 		aserr[k] = aserror;
 		k++;
@@ -80,11 +79,11 @@ void AlphaBeta(Double_t e = 120)
 		alph >> aegamma >> atheta >> adiffxssm >> adiffxs >> adiffxsbg >> adxs;
 
 		// Place variables from lines into arrays
-		if(aegamma == e && atheta%20 == 0)
+		if(aegamma == e && atheta%20 == 0 && atheta != 0)
 		{
 
-		        // x data = theta
-			athet[i] = atheta;
+			// y data = DXS
+			adixs[i] = adiffxs;
 
 			// amount DXS is varied +/-2
 			adeltaxs[i] = adxs;
@@ -100,7 +99,7 @@ void AlphaBeta(Double_t e = 120)
 	l = 0;
 	
 	// Determine Chi-Squared for alpha values +/- 1.5 from alpha0
-	for (alpha = 11.0; alpha <= 14.0; alpha = alpha + 0.1)
+	for(alpha = 9.0; alpha <= 15.0; alpha = alpha + 0.1)
 	{
 
 	        alphaa[l] = alpha;
@@ -109,8 +108,7 @@ void AlphaBeta(Double_t e = 120)
 		for (j = 0; j < 8; j++)
 		{
 
-		        //I don't think these are right
-		        axsnew[j] = asmear[j] + ((alpha-alpha0)/2)*adeltaxs[j];
+		        axsnew[j] = adixs[j] + ((alpha-alpha0)/2)*adeltaxs[j];
 		
 			// Calculates the chi-sq for this point
 			achi_sq += pow((axsnew[j] - asmear[j])/aserr[j], 2);
@@ -127,25 +125,49 @@ void AlphaBeta(Double_t e = 120)
 		}
 
 		// Need to check this value
-		alpherr = alpha0 - alpha;
+	       	alpherr = alpha0 - alpha;
 
 		cout << "Alpha = " << alpha << endl;
-		cout << "Alpha Error = " << alpherr << endl;
+	       	cout << "Alpha Error = " << alpherr << endl;
 		cout << "Alpha Reduced Chi Squared  = " << achi_sqa[l] << endl;
+		
+		achi_sq = 0;
 		l++;
+		
 	}
+	
+	TString titlea = Form("Alpha Varied Chi-Squared Values for 100 MeV", e);
+	
+	TGraph *gr1 = new TGraph(l, alphaa, achi_sqa);
+	gr1->SetTitle(titlea);
+	gr1->SetLineWidth(3);
+	gr1->SetLineColor(kRed);
+	gr1->GetXaxis()->SetTitle("Alpha (fm^{3})");
+	gr1->GetYaxis()->SetTitle("#chi^{2}_{red}");
+	gr1->GetXaxis()->SetTitleSize(0.05);
+	gr1->GetYaxis()->SetTitleSize(0.05);
+	gr1->GetXaxis()->SetLabelSize(0.03);
+	gr1->GetYaxis()->SetLabelSize(0.03);
+	gr1->GetXaxis()->SetTitleOffset(0.8);
+	gr1->GetYaxis()->SetTitleOffset(1.0);
+	gr1->GetXaxis()->CenterTitle();
+	gr1->GetYaxis()->CenterTitle();
+	gr1->GetXaxis()->SetRangeUser( 9, 15);
+	gr1->GetYaxis()->SetRangeUser( 1, 2.5);
 
-	TGraphErrors *gr1 = new TGraphErrors(l, alphaa, achi_sqa);
-	gr1->GetXaxis()->SetRangeUser( 11, 14);
-	gr1->GetYaxis()->SetRangeUser( 0, 6);
-
-	TCanvas *c1 = new TCanvas("c1", "Errors", 0, 0, 500,500);
-
+	TLine *line1 = new TLine(9, 2, 15, 2);
+	line1->SetLineWidth(2);
+	
+	TCanvas *c1 = new TCanvas("c1", "Errors", 0, 0, 800,400);
+       	c1->Divide(2);
+	c1->cd(1);
+	
 	gr1->Draw("AL");
-
+	line1->Draw("clone");
+	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-	Int_t l, m, n;
+
+	Int_t m, n, o, p;
 
 	// Theta, differential cross section data,
 	//differential cross section error
@@ -160,17 +182,19 @@ void AlphaBeta(Double_t e = 120)
 	Int_t btheta;
 
 	// Accepted alpha value, varied alpha value
-	// Chi-squared, error on alphs
+	// Chi-squared, error on alpha
 	Double_t beta0, beta, bchi_sq, beterr;
 
-	// Differential cross section, Differential cross section error, Theta
-	Double_t bsmear[20], bsthet[20], bserr[20];
+	// Differential cross section ameared value,
+	// Differential cross section error
+	Double_t bsmear[20], bserr[20];
 
-	// Change is cross section, new alpha value
-	Double_t bdeltaxs[20], bxsnew[20];
+	// Change is cross section, new alpha value,
+	// Central Differential Cross section
+	Double_t bdeltaxs[20], bxsnew[20], bdixs[20];
 
-	// Angle
-	Int_t bthet[20];
+	// Chi-Squared array, beta array
+	Double_t bchi_sqa[100], betaa[100];
 
 	// Simulated cross section data
 	TString nbeta = "3HeXsec_neutron_betavaried.dat";
@@ -199,33 +223,32 @@ void AlphaBeta(Double_t e = 120)
 	}
 
 	// Read through smeared data file, placing variables into arrays
-	l = 0;
+	m = 0;
 	while(!bsmearf.eof())
 	{
 		bsmearf >> bstheta >> bs >> bserror;
-		bsthet[l] = bstheta;
-		bsmear[l] = bs;
-		bserr[l] = bserror;
-		l++;
+		bsmear[m] = bs;
+		bserr[m] = bserror;
+		m++;
 	}
 	bsmearf.close();
 
 	// Read through theory DXS data file
-	m = 0;
+	n = 0;
 	while(!bet.eof())
 	{
 		bet >> begamma >> btheta >> bdiffxssm >> bdiffxs >> bdiffxsbg >> bdxs;
 
 		// Place variables from lines into arrays
-		if(begamma == e && btheta%20 == 0)
+		if(begamma == e && btheta%20 == 0 && btheta != 0)
 		{
 
-		        // x data = theta
-			bthet[m] = btheta;
+		        // ydata = DXS
+		        bdixs[n] = bdiffxs;
 
 			// amount DXS is varied +/- 2
-			bdeltaxs[m] = bdxs;   
-			m++;
+			bdeltaxs[n] = bdxs;   
+			n++;
 		}			
 	}
 	bet.close();
@@ -234,38 +257,68 @@ void AlphaBeta(Double_t e = 120)
 
 	// Choose central value of accepted beta amount
 	beta0 = 1.25;
+	p=0;
 
 	// Determine Chi-squared for alpha values +/- 1.5 from beta0
-	for (beta = 0.00; beta <= 2.50; beta = beta + 0.15)
+	for (beta = -1.5; beta <= 4.4; beta = beta + 0.15)
 	{
 
+	        betaa[p] = beta;
+	  
 	        // Calculate Chi-squared for each angle
-		for (n = 0; n < 8; n++)
+		for (o = 0; o < 8; o++)
 			{
-				bxsnew[n] = bsmear[n] + ((beta-beta0)*bdeltaxs[n])/2;
+				bxsnew[o] = bdixs[o] + ((beta-beta0)*bdeltaxs[o])/2;
 				
 				//Calculates the chi-sq for this point
-				bchi_sq += pow((bxsnew[n] - bsmear[n])/bserr[n], 2);
+				bchi_sq += pow((bxsnew[o] - bsmear[o])/bserr[o], 2);
 
 			}
 
 		// Calculate chi squared
-		if (n > 1)
+		if (o > 1)
 		{
-			bchi_sq /= n-2;
+		        bchi_sqa[p] = bchi_sq/(o-2);
 		}	
-		else if ( (n == 1) || ( n == 0))
+		else if ( (o == 1) || ( o == 0))
 		{
-			bchi_sq = 0;
+			bchi_sqa[p] = 0;
 		}
 
 		beterr = beta0 - beta;
 
 		cout << "Beta = " << beta << endl;
 		cout << "Beta Error = " << beterr << endl;
-		cout << "Beta Reduced Chi Squared  = " << bchi_sq << endl;
-
+		cout << "Beta Reduced Chi Squared  = " << bchi_sqa[p] << endl;
+		
+		bchi_sq = 0;
+		p++;
 	}
 
-*/
+	TString titlea = Form("Beta Varied Chi-Squared Values for 100 MeV", e);
+	
+	TGraph *gr2 = new TGraph(p, betaa, bchi_sqa);
+	gr2->SetTitle(titlea);
+	gr2->SetLineWidth(3);
+	gr2->SetLineColor(2);
+	gr2->GetXaxis()->SetTitle("Beta (fm^{3})");
+	gr2->GetYaxis()->SetTitle("#chi^{2}_{red}");
+	gr2->GetXaxis()->SetLabelSize(0.03);
+	gr2->GetYaxis()->SetLabelSize(0.03);
+	gr2->GetXaxis()->SetTitleOffset(0.8);
+	gr2->GetYaxis()->SetTitleOffset(1.0);
+	gr2->GetXaxis()->SetTitleSize(0.05);
+	gr2->GetYaxis()->SetTitleSize(0.05);
+	gr2->GetXaxis()->CenterTitle();
+	gr2->GetYaxis()->CenterTitle();
+	gr2->GetXaxis()->SetRangeUser( -1.5, 4);
+	gr2->GetYaxis()->SetRangeUser( 1, 2.5);
+
+	TLine *line2 = new TLine(-1.5, 2, 4, 2);
+	line2->SetLineWidth(2);
+     
+	c1->cd(2);
+	gr2->Draw("AL");
+	line2->Draw("clone");
+	
 }
