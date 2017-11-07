@@ -8,7 +8,7 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
   }
 
 //Setting up paths to files
-  /*
+  
   TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
   TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
   TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
@@ -16,15 +16,6 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
     TString HePi0_name; HePi0_name.Form("data/3HePi0/%d_%d.root",E,events);
     TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",E,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",E,events);
-  }
-  */
-  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",E,events);
-  if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",E,events);
-    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",E,events);
-    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",E,events);
   }
   
 //Import data from files
@@ -101,10 +92,12 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
 
   GP2H_h->SetLineColor(2);
   GP2H_h->SetLineWidth(2);
+  GP2H_h->SetAxisRange(-10,10,"X");
   GP2H_h->DrawClone("SameHist");
  
   PPN_h->SetLineColor(4);
   PPN_h->SetLineWidth(2);
+  PPN_h->SetAxisRange(-10,10,"X");
   PPN_h->DrawClone("Samehist");
 
   if(E >=140){
@@ -131,10 +124,12 @@ int mmass_theta_1D(Int_t E = 100, Int_t theta = 80, Int_t events = 100000){
   leg.AddEntry(compton_h,"Compton Scattering");
   leg.AddEntry(GP2H_h,"QF from Proton");
   leg.AddEntry(PPN_h,"Pure Breakup");
-  leg.AddEntry(HePi0_h,"Pi0 Production");
-  leg.AddEntry(PPi02H_h,"QF Pi0 fom Proton");
-  leg.AddEntry(P2HPi0_h,"QF Pi0 from Deuterium");
-  leg.DrawClone("SameHist");  
+  if(E >= 140){
+    leg.AddEntry(HePi0_h,"Pi0 Production");
+    leg.AddEntry(PPi02H_h,"QF Pi0 fom Proton");
+    leg.AddEntry(P2HPi0_h,"QF Pi0 from Deuterium");
+  }
+  leg.DrawClone("SameHist");
   /*
   //Add Histograms
   TH1D *total_h=new TH1D(*compton_h);

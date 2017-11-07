@@ -6,13 +6,13 @@ int contamination(Int_t E = 100, Int_t events = 100000){
   
 //Setting up paths to files
 
-  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",E,events);
+  TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
+  TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
+  TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
   if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",E,events);
-    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",E,events);
-    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",E,events);
+    TString HePi0_name; HePi0_name.Form("data/3HePi0/%d_%d.root",E,events);
+    TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",E,events);
+    TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",E,events);
   }
   
 //Import data from files
@@ -35,7 +35,7 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     TH1F* P2HPi0_h = (TH1F*) P2HPi0->GetObjectChecked("Compton_EmCompTotP;1","TH1F");
   }
 
-  /*
+  
 //Scale histograms
   if(E == 100){
     GP2H_h->Scale(2.13);
@@ -52,47 +52,61 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     P2HPi0_h->Scale(192.3);
     PPN_h->Scale(9.62);
     }
-  */
+  
 //Format and Draw Histograms
+  gStyle->SetOptStat(0);
   TCanvas* c = new TCanvas();
-
+  c->Divide(1,2);
+  c->cd(1);
+  
   TString title; title.Form("E=%dMeV: Missing Energy",E);
   compton_h->SetTitle(title);
+  //compton_h->SetTitleSize(5);
   compton_h->SetXTitle("Missing Energy");
   compton_h->SetYTitle("Number of Events");
-  compton_h->SetAxisRange(0,3500,"Y");
+  compton_h->SetTitleOffset(0.8, "XY");
+  compton_h->SetTitleSize(0.05, "XY");
   compton_h->SetAxisRange(-10,10,"X");
   compton_h->SetLineColor(1);
+  compton_h->SetLineWidth(2);
+  compton_h->SetFillColorAlpha(1, 0.5);
+  compton_h->SetFillStyle(3001);
   compton_h->DrawClone("hist");
 
   GP2H_h->SetLineColor(3);
+  GP2H_h->SetLineWidth(2);
   GP2H_h->DrawClone("SameHist");
   
   PPN_h->SetLineColor(7);
+  PPN_h->SetLineWidth(2);
   PPN_h->DrawClone("Samehist");
 
   if(E >=140){
     HePi0_h->SetLineColor(2);
+    HePi0_h->SetLineWidth(2);
     HePi0_h->DrawClone("SameHist");
 
     PPi02H_h->SetLineColor(4);
+    PPi02H_h->SetLineWidth(2);
     PPi02H_h->DrawClone("SameHist");
 
     P2HPi0_h->SetLineColor(6);
+    P2HPi0_h->SetLineWidth(2);
     P2HPi0_h->DrawClone("SameHist");
   }
 
+  c->cd(2);
 //Create a legend
-  TLegend leg(.1,.7,.3,.9);
+  TLegend leg(.1,.7,.4,1.0);
   leg.AddEntry(compton_h,"Compton Scattering");
-  leg.AddEntry(GP2H_h,"GP2H_QF");
-  leg.AddEntry(PPN_h,"PPN");
+  leg.AddEntry(GP2H_h,"QF from proton");
+  leg.AddEntry(PPN_h,"Pure breakup");
   if(E >=140){
     leg.AddEntry(HePi0_h,"Pi0 Production");
-    leg.AddEntry(PPi02H_h,"PPi2H_h");
-    leg.AddEntry(P2HPi0_h,"P2HPi0");
+    leg.AddEntry(PPi02H_h,"QF Pi0 from proton");
+    leg.AddEntry(P2HPi0_h,"QF Pi0 from deuteron");
   }
-  leg.DrawClone("SameHist");
+  leg.DrawClone("hist");
 	
 //Add Histograms
   TH1F* total_h=new TH1F(*compton_h);
@@ -126,19 +140,8 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     Double_t HePi0_cont = HePi0_peak/total_peak * 100;
     Double_t PPi02H_cont = PPi02H_peak/total_peak * 100;
     Double_t P2HPi0_cont = P2HPi0_peak/total_peak * 100;
-  }
+  } 
 
-//Print out events in Compton peak
-  cout<<"Compton: "<<comp_peak/100000<<"%"<<endl;
-  cout<<"GP2H_QF: "<<GP2H_peak/100000<<"%"<<endl;
-  cout<<"PPN: "<<PPN_peak/100000<<"%"<<endl;
-  if(E >=140){
-    cout<<"3HePi0: "<<HePi0_peak/100000<<"%"<<endl;
-    cout<<"PPi02H_QF: "<<PPi02H_peak/100000<<"%"<<endl;
-    cout<<"P2HPi0_QF: "<<P2HPi0_peak/100000<<"%"<<endl;
-  }
-  
-  /* 
 //Print out contaminations
   cout<<"Compton: "<<comp_cont<<"%"<<endl;
   cout<<"GP2H_QF: "<<GP2H_cont<<"%"<<endl;
@@ -148,7 +151,6 @@ int contamination(Int_t E = 100, Int_t events = 100000){
     cout<<"PPi02H_QF: "<<PPi02H_cont<<"%"<<endl;
     cout<<"P2HPi0_QF: "<<P2HPi0_cont<<"%"<<endl;
   }
-  */
   return 0;
 }
 

@@ -9,7 +9,7 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
   gStyle->SetPalette(1);
 
 //Setting up paths to files
-  /*
+  
   TString comp_name; comp_name.Form("data/G3He/%d_%d.root",E,events);
   TString GP2H_name; GP2H_name.Form("data/GP2H_QF/%d_%d.root",E,events);
   TString PPN_name; PPN_name.Form("data/PPN/%d_%d.root",E,events);
@@ -18,15 +18,6 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
     TString PPi02H_name; PPi02H_name.Form("data/PPi02H_QF/%d_%d.root",E,events);
     TString P2HPi0_name; P2HPi0_name.Form("data/P2HPi0_QF/%d_%d.root",E,events);
   }
-  */
-  TString comp_name; comp_name.Form("dynCut/G3He/%d_%d.root",E,events);
-  TString GP2H_name; GP2H_name.Form("dynCut/GP2H_QF/%d_%d.root",E,events);
-  TString PPN_name; PPN_name.Form("dynCut/PPN/%d_%d.root",E,events);
-  if(E >= 140){
-    TString HePi0_name; HePi0_name.Form("dynCut/3HePi0/%d_%d.root",E,events);
-    TString PPi02H_name; PPi02H_name.Form("dynCut/PPi02H_QF/%d_%d.root",E,events);
-    TString P2HPi0_name; P2HPi0_name.Form("dynCut/P2HPi0_QF/%d_%d.root",E,events);
-    }
   
 //Import data from files
   TFile* compton = new TFile(comp_name);
@@ -87,38 +78,55 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
   compton_2h->SetTitle("Compton");
   compton_2h->SetXTitle("Missing Energy (MeV)");
   compton_2h->SetYTitle("Cos(#theta)");
+  compton_2h->SetTitleOffset(0.8, "XY");
+  compton_2h->SetTitleSize(0.05, "XY");
   compton_2h->SetAxisRange(-10,10,"X");
   compton_2h->DrawClone("col");
 
   c->cd(2);
-  GP2H_2h->SetTitle("GP2H_QF");
+  GP2H_2h->SetTitle("QF from Proton");
   GP2H_2h->SetXTitle("Missing Energy (MeV)");
   GP2H_2h->SetYTitle("Cos(#theta)");
+  GP2H_2h->SetTitleOffset(0.8, "XY");
+  GP2H_2h->SetTitleSize(0.05, "XY");
+  GP2H_2h->SetAxisRange(-10,10,"X");
   GP2H_2h->DrawClone("col");
   
   c->cd(3);
-  PPN_2h->SetTitle("PPN");
+  PPN_2h->SetTitle("Pure Breakup");
   PPN_2h->SetXTitle("Missing Energy (MeV)");
   PPN_2h->SetYTitle("Cos(#theta)");
+  PPN_2h->SetTitleOffset(0.8, "XY");
+  PPN_2h->SetTitleSize(0.05, "XY");
+  PPN_2h->SetAxisRange(-10,10,"X");
   PPN_2h->DrawClone("col");
 
   if(E >=140){
     c->cd(4);
-    HePi0_2h->SetTitle("G3HePi0");
+    HePi0_2h->SetTitle("Pi0 production");
     HePi0_2h->SetXTitle("Missing Energy (MeV)");
     HePi0_2h->SetYTitle("Cos(#theta)");
+    HePi0_2h->SetTitleOffset(0.8, "XY");
+    HePi0_2h->SetTitleSize(0.05, "XY");
+    HePi0_2h->SetAxisRange(-10,10,"X");
     HePi0_2h->DrawClone("col");
 
     c->cd(5);
-    PPi02H_2h->SetTitle("PPi02H_QF");
+    PPi02H_2h->SetTitle("QF Pi0 from proton");
     PPi02H_2h->SetXTitle("Missing Energy (MeV)");
     PPi02H_2h->SetYTitle("Cos(#theta)");
+    PPi02H_2h->SetTitleOffset(0.8, "XY");
+    PPi02H_2h->SetTitleSize(0.05, "XY");
+    PPi02H_2h->SetAxisRange(-10,10,"X");
     PPi02H_2h->DrawClone("col");
 
     c->cd(6);
-    P2HPi0_2h->SetTitle("P2HPi0_QF");
+    P2HPi0_2h->SetTitle("QF Pi0 from deuteron");
     P2HPi0_2h->SetXTitle("Missing Energy (MeV)");
     P2HPi0_2h->SetYTitle("Cos(#theta)");
+    P2HPi0_2h->SetTitleOffset(0.8, "XY");
+    P2HPi0_2h->SetTitleSize(0.05, "XY");
+    P2HPi0_2h->SetAxisRange(-10,10,"X");
     P2HPi0_2h->DrawClone("col");
   }
   	
@@ -141,7 +149,7 @@ int mmass_theta(Int_t E = 100, Int_t events = 100000){
     Double_t theta_min = ((Double_t)x * TMath::Pi())/180;
     Double_t theta_max = ((Double_t)(x+20) * TMath::Pi())/180;
     Double_t yhigh = compton_2h->GetYaxis()->FindFixBin(TMath::Cos(theta_min));
-    Double_t ylow = compton_2h->GetYaxis()->FindFixBin(TMath::Cos(theta_max));
+    Double_t ylow = compton_2h->GetYaxis()->FindFixBin(TMath::Cos(theta_max)+0.02);
   
     Double_t total_peak = total_2h->Integral(xlow,xhigh,ylow,yhigh);
     Double_t comp_peak = compton_2h->Integral(xlow,xhigh,ylow,yhigh);
